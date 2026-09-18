@@ -309,12 +309,12 @@ const Hero3DView = () => {
     const chipMesh = new THREE.Mesh(chipGeo, chipMat);
     chipMesh.position.set(-1.1, 0.15, 0.14);
     cardGroup.add(chipMesh);
-    cardGroup.add(Object.assign(
-      new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.0, 0.03),
-        new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.98, roughness: 0.15 })
-      ),
-      { position: new THREE.Vector3(-1.1, 0.15, 0.09) }
-    ));
+    const contactsMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(1.0, 1.0, 0.03),
+      new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.98, roughness: 0.15 })
+    );
+    contactsMesh.position.set(-1.1, 0.15, 0.09);
+    cardGroup.add(contactsMesh);
 
     // ─── NFC Ring ────────────────────────────────────────────────────────────
     const nfcMesh = new THREE.Mesh(
@@ -342,12 +342,13 @@ const Hero3DView = () => {
     cardGroup.add(crestMesh);
 
     stateRef.current.layers = [
-      { mesh: baseMesh, name: 'Base Enclave', targetZ: 0, explodedZ: -1.5, color: '#3b82f6' },
-      { mesh: circuitMesh, name: 'PCB Crypto Bus', targetZ: 0.056, explodedZ: -0.5, color: '#06b6d4' },
-      { mesh: chipMesh, name: 'HSM Core', targetZ: 0.14, explodedZ: 0.7, color: '#0284c7' },
-      { mesh: nfcMesh, name: 'FIDO2 Sensor', targetZ: 0.1, explodedZ: 1.3, color: '#10b981' },
-      { mesh: fingerMesh, name: 'Biometric Enclave', targetZ: 0.12, explodedZ: 1.6, color: '#06b6d4' },
-      { mesh: crestMesh, name: 'Zero-Trust Crest', targetZ: 0.13, explodedZ: 2.0, color: '#6366f1' },
+      { mesh: baseMesh,      name: 'Base Enclave',      targetZ: 0,     explodedZ: -1.5, color: '#3b82f6' },
+      { mesh: circuitMesh,   name: 'PCB Crypto Bus',    targetZ: 0.056, explodedZ: -0.5, color: '#06b6d4' },
+      { mesh: chipMesh,      name: 'HSM Core',          targetZ: 0.14,  explodedZ: 0.7,  color: '#0284c7' },
+      { mesh: contactsMesh,  name: 'Gold Isolation Grid', targetZ: 0.09, explodedZ: 0.3, color: '#f59e0b' },
+      { mesh: nfcMesh,       name: 'FIDO2 Sensor',      targetZ: 0.1,   explodedZ: 1.3,  color: '#10b981' },
+      { mesh: fingerMesh,    name: 'Biometric Enclave', targetZ: 0.12,  explodedZ: 1.6,  color: '#06b6d4' },
+      { mesh: crestMesh,     name: 'Zero-Trust Crest',  targetZ: 0.13,  explodedZ: 2.0,  color: '#6366f1' },
     ];
 
     // ─── Gyroscopic Rings ─────────────────────────────────────────────────────

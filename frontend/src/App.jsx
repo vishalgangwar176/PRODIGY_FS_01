@@ -7,10 +7,12 @@ import RegisterPage from './pages/RegisterPage';
 import VerifyEmailPage from './pages/VerifyEmailPage';
 import Dashboard    from './pages/Dashboard';
 import AdminPage    from './pages/AdminPage';
+import GlobalCursor from './components/GlobalCursor';
 
 function App() {
   return (
     <BrowserRouter>
+      <GlobalCursor />
       <AuthProvider>
         <Routes>
           {/* Public routes */}
