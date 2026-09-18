@@ -433,20 +433,72 @@ a:hover { color: var(--clr-accent); }
 .hero-3d-wrapper {
   position: relative;
   width: 100%;
-  height: 540px;
-  background: radial-gradient(circle at center, rgba(59, 130, 246, 0.08) 0%, rgba(7, 11, 20, 0.85) 75%);
-  border: 1px solid var(--clr-border);
+  height: 580px;
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(59, 130, 246, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 60%, rgba(6, 182, 212, 0.08) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, rgba(7, 11, 20, 0.92) 40%, rgba(5, 8, 16, 0.98) 100%);
+  border: 1px solid transparent;
   border-radius: var(--radius-xl);
   overflow: hidden;
-  box-shadow: var(--shadow-lg), 0 0 60px rgba(59, 130, 246, 0.15);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 80px rgba(59, 130, 246, 0.18),
+    0 0 150px rgba(6, 182, 212, 0.08),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  background-clip: padding-box;
+  outline: 1px solid rgba(59, 130, 246, 0.2);
+  animation: borderPulse 4s ease-in-out infinite;
+}
+
+.hero-3d-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(59, 130, 246, 0.015) 2px,
+      rgba(59, 130, 246, 0.015) 4px
+    );
+  pointer-events: none;
+  z-index: 6;
+  border-radius: var(--radius-xl);
+}
+
+.hero-3d-wrapper::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: calc(var(--radius-xl) + 2px);
+  background: linear-gradient(135deg, rgba(59,130,246,0.5) 0%, rgba(6,182,212,0.3) 50%, rgba(139,92,246,0.4) 100%);
+  z-index: -1;
+  animation: borderGlow 4s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes borderPulse {
+  0%, 100% { outline-color: rgba(59, 130, 246, 0.2); }
+  50% { outline-color: rgba(59, 130, 246, 0.5); }
+}
+
+@keyframes borderGlow {
+  0% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+  100% { opacity: 0.3; }
 }
 
 .hero-3d-canvas {
   width: 100%;
   height: 100%;
-  cursor: grab;
+  cursor: none;
 }
-.hero-3d-canvas:active { cursor: grabbing; }
+.hero-3d-canvas:active { cursor: none; }
 
 .hero-3d-toolbar {
   position: absolute;
