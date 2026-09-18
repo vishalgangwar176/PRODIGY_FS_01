@@ -577,38 +577,52 @@ const Hero3DView = () => {
       {/* Heat Map Overlay */}
       {isInsideCanvas && <HeatMapOverlay mousePos={mousePos} containerRef={containerRef} />}
 
-      {/* FPS / Stats HUD */}
+      {/* ── TOP LEFT: FPS / Stats HUD ── */}
       <div style={{
-        position: 'absolute', top: '10px', left: '12px',
-        background: 'rgba(7,11,20,0.85)', backdropFilter: 'blur(8px)',
-        border: '1px solid rgba(59,130,246,0.25)', borderRadius: '8px',
-        padding: '5px 10px', fontFamily: 'JetBrains Mono, monospace',
-        fontSize: '0.65rem', color: '#64748b', zIndex: 10,
-        display: 'flex', gap: '14px', letterSpacing: '0.05em',
+        position: 'absolute', top: '14px', left: '14px',
+        background: 'rgba(5,8,20,0.82)', backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(59,130,246,0.2)', borderRadius: '8px',
+        padding: '6px 14px',
+        fontFamily: 'JetBrains Mono, monospace',
+        fontSize: '0.62rem', color: '#475569', zIndex: 20,
+        display: 'flex', gap: '16px', alignItems: 'center',
+        letterSpacing: '0.06em',
       }}>
-        <span style={{ color: stats.fps >= 55 ? '#10b981' : '#f59e0b' }}>FPS {stats.fps}</span>
-        <span>{stats.triangles.toLocaleString()} ▲</span>
-        <span style={{ color: '#3b82f6' }}>WEBGL 2.0</span>
-        <span style={{ color: '#06b6d4' }}>✦ LIVE</span>
+        <span style={{ color: stats.fps >= 55 ? '#10b981' : '#f59e0b', fontWeight: 700 }}>
+          FPS {stats.fps}
+        </span>
+        <span style={{ color: '#334155' }}>|</span>
+        <span style={{ color: '#64748b' }}>{stats.triangles.toLocaleString()} ▲</span>
+        <span style={{ color: '#334155' }}>|</span>
+        <span style={{ color: '#3b82f6', fontWeight: 600 }}>WEBGL 2.0</span>
+        <span style={{ color: '#334155' }}>|</span>
+        <span style={{ color: '#06b6d4', fontWeight: 600 }}>● LIVE</span>
       </div>
 
-      {/* Pulse Counter HUD */}
+      {/* ── TOP RIGHT: Pulse Counter ── */}
       {pulseCount > 0 && (
         <div style={{
-          position: 'absolute', top: '10px', right: '12px',
-          background: 'rgba(59,130,246,0.15)', backdropFilter: 'blur(8px)',
-          border: '1px solid rgba(59,130,246,0.35)', borderRadius: '8px',
-          padding: '5px 12px', fontFamily: 'JetBrains Mono, monospace',
-          fontSize: '0.7rem', color: '#3b82f6', zIndex: 10,
+          position: 'absolute', top: '14px', right: '14px',
+          background: 'rgba(59,130,246,0.12)', backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(59,130,246,0.3)', borderRadius: '8px',
+          padding: '6px 14px',
+          fontFamily: 'JetBrains Mono, monospace',
+          fontSize: '0.62rem', color: '#3b82f6', zIndex: 20,
+          letterSpacing: '0.08em', fontWeight: 600,
         }}>
-          ⚡ {pulseCount} pulses emitted
+          ⚡ {pulseCount}
         </div>
       )}
 
-      {/* 3D Control Bar */}
+      {/* ── BOTTOM: Control Toolbar ── */}
       <div className="hero-3d-toolbar">
+        {/* View mode tabs */}
         <div className="hero-3d-modes">
-          {[['solid', '🛡️ Solid'], ['hologram', '🌐 Hologram'], ['exploded', '💥 Exploded']].map(([mode, label]) => (
+          {[
+            ['solid',    'Solid'],
+            ['hologram', 'Hologram'],
+            ['exploded', 'Exploded'],
+          ].map(([mode, label]) => (
             <button
               key={mode}
               type="button"
@@ -619,17 +633,27 @@ const Hero3DView = () => {
             </button>
           ))}
         </div>
+
+        {/* Actions */}
         <div className="hero-3d-actions">
-          <button type="button" className={`btn-3d-action ${autoRotate ? 'active' : ''}`} onClick={() => setAutoRotate(v => !v)}>
+          <button
+            type="button"
+            className={`btn-3d-action ${autoRotate ? 'active' : ''}`}
+            onClick={() => setAutoRotate(v => !v)}
+          >
             {autoRotate ? '⏸ Pause' : '▶ Spin'}
           </button>
-          <button type="button" className="btn-3d-action pulse-action" onClick={handleTriggerPulse}>
+          <button
+            type="button"
+            className="btn-3d-action pulse-action"
+            onClick={handleTriggerPulse}
+          >
             ⚡ Pulse
           </button>
         </div>
       </div>
 
-      {/* Exploded Legend */}
+      {/* ── Exploded Layer Legend (left side) ── */}
       {viewMode === 'exploded' && (
         <div className="exploded-legend">
           {stateRef.current.layers.slice().reverse().map((l) => (
@@ -641,9 +665,9 @@ const Hero3DView = () => {
         </div>
       )}
 
-      {/* Hint */}
+      {/* ── Bottom centre hint ── */}
       <div className="hero-3d-hint">
-        <span>🖱 Drag to orbit • Move mouse for heat trace • Click ⚡ to pulse</span>
+        <span>Drag to orbit • Move mouse for heat trace • Click ⚡ to pulse</span>
       </div>
     </div>
   );

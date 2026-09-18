@@ -502,14 +502,15 @@ a:hover { color: var(--clr-accent); }
 
 .hero-3d-toolbar {
   position: absolute;
-  top: 18px;
-  left: 20px;
-  right: 20px;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
+  z-index: 20;
   pointer-events: none;
 }
 
@@ -605,7 +606,7 @@ a:hover { color: var(--clr-accent); }
 
 .hero-3d-hint {
   position: absolute;
-  bottom: 14px;
+  bottom: 56px;
   left: 0;
   right: 0;
   text-align: center;
@@ -1610,7 +1611,8 @@ body:has(.addict-root)::before { display: none; }
   max-width: 1080px;
   border: 1px solid var(--ad-line);
   border-radius: 6px;
-  overflow: hidden;
+  /* No overflow:hidden here — the inner wrapper handles its own clipping */
+  overflow: visible;
   box-shadow:
     0 0 0 1px rgba(59,130,246,0.08),
     0 40px 100px rgba(0,0,0,0.75),
