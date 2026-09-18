@@ -117,8 +117,16 @@ const WorkCard = ({ id, title, desc, tag, accent }) => {
 const LandingPage = () => {
   const { user } = useAuth();
   const [splashDone, setSplashDone] = useState(false);
-  const [heroRef, heroVisible] = useReveal(0.05);
+  // Hero is above-the-fold — mark visible after splash finishes
+  const [heroReady, setHeroReady] = useState(false);
   const [phraseRef, phraseVisible] = useReveal();
+
+  useEffect(() => {
+    if (splashDone) {
+      // Small rAF delay so CSS transition fires
+      requestAnimationFrame(() => requestAnimationFrame(() => setHeroReady(true)));
+    }
+  }, [splashDone]);
 
   const events = [
     { id: '001', title: 'Replay Attack Blocked', desc: 'Invalid refresh token hash detected — session cookie purged and user forced re-auth via 401 redirect.', tag: 'THREAT NEUTRALIZED', accent: '#ef4444' },
@@ -141,21 +149,22 @@ const LandingPage = () => {
       <section className="addict-hero" aria-label="Hero">
         <div className="addict-hero__bg-grid" aria-hidden="true" />
 
-        {/* Text block */}
-        <div ref={heroRef} className={`addict-hero__content${heroVisible ? ' is-visible' : ''}`}>
+        {/* Text block — visible immediately after splash */}
+        <div className={`addict-hero__content${heroReady ? ' is-visible' : ''}`}>
           <p className="addict-hero__label">
             <span className="addict-hero__label-dot" aria-hidden="true" />
             HARDWARE-GRADE IDENTITY PLATFORM
           </p>
 
           <h1 className="addict-hero__title">
-            <em className="addict-hero__title-serif">Cipher</em>
-            <strong className="addict-hero__title-bold">Shield</strong>
-            <span className="addict-hero__title-sub">IAM Suite v4.2</span>
+            <em className="addict-hero__title-line addict-hero__title-serif">Cipher</em>
+            <strong className="addict-hero__title-line addict-hero__title-bold">Shield</strong>
+            <span className="addict-hero__title-line addict-hero__title-sub">IAM Suite v4.2</span>
           </h1>
 
           <p className="addict-hero__sub">
-            Cryptographically isolated authentication pipeline — JWT rotation, httpOnly session vaults, and sub-millisecond RBAC clearance.
+            Cryptographically isolated authentication pipeline — JWT rotation,
+            httpOnly session vaults, and sub-millisecond RBAC clearance.
           </p>
 
           <div className="addict-hero__actions">

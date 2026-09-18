@@ -1279,20 +1279,29 @@ body:has(.addict-root)::before { display: none; }
   border-bottom: 1px solid var(--ad-line);
   padding: 14px 48px;
 }
-/* Logo */
+/* Logo — plain HTML text, no SVG collision */
 .addict-header__logo {
   display: flex;
-  align-items: baseline;
-  gap: 10px;
+  align-items: center;
+  gap: 12px;
   text-decoration: none;
   color: var(--ad-text);
 }
-.addict-wordmark {
-  height: 22px;
-  width: auto;
-  color: var(--ad-text);
-  fill: var(--ad-text);
+.addict-wordmark-text {
   font-family: var(--ad-serif);
+  font-size: 1.15rem;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+.addict-wordmark-bold {
+  font-weight: 700;
+  color: var(--ad-text);
+}
+.addict-wordmark-light {
+  font-weight: 300;
+  color: var(--ad-text);
+  opacity: 0.7;
 }
 .addict-header__logo-tag {
   font-family: var(--ad-mono);
@@ -1508,42 +1517,49 @@ body:has(.addict-root)::before { display: none; }
   50% { opacity: 0.4; transform: scale(0.85); }
 }
 
-/* Main title */
+/* Main title — each line is block, no collision */
 .addict-hero__title {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
-  margin-bottom: 24px;
-  line-height: 0.9;
+  margin-bottom: 28px;
+}
+/* addict-hero__title-line forces block + clear separation */
+.addict-hero__title-line {
+  display: block;
+  line-height: 1;
 }
 .addict-hero__title-serif {
   font-family: var(--ad-serif);
-  font-size: clamp(4.5rem, 13vw, 11rem);
+  font-size: clamp(3.5rem, 10vw, 9rem);
   font-weight: 300;
   font-style: italic;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   color: var(--ad-text);
   display: block;
+  line-height: 1;
+  margin-bottom: -0.06em; /* controlled tight coupling between the two headline words */
 }
 .addict-hero__title-bold {
   font-family: var(--ad-serif);
-  font-size: clamp(4.5rem, 13vw, 11rem);
+  font-size: clamp(3.5rem, 10vw, 9rem);
   font-weight: 700;
   font-style: normal;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   color: var(--ad-text);
   display: block;
+  line-height: 1;
+  margin-bottom: 18px;
 }
 .addict-hero__title-sub {
   font-family: var(--ad-mono);
-  font-size: clamp(0.65rem, 1.2vw, 0.9rem);
+  font-size: clamp(0.6rem, 1.1vw, 0.82rem);
   font-weight: 400;
-  letter-spacing: 0.35em;
+  letter-spacing: 0.38em;
   text-transform: uppercase;
   color: var(--ad-muted);
-  margin-top: 16px;
   display: block;
+  line-height: 1;
 }
 
 /* Hero subtitle paragraph */

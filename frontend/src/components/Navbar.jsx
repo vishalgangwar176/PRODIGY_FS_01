@@ -19,14 +19,9 @@ const Navbar = () => {
     <header className={`addict-header ${scrolled ? 'addict-header--scrolled' : ''}`}>
       {/* Logo */}
       <Link to="/" className="addict-header__logo">
-        <svg viewBox="0 0 120 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="addict-wordmark">
-          <text x="0" y="20" fontFamily="'Cormorant Garamond', Georgia, serif" fontSize="20" fontWeight="700" fill="currentColor" letterSpacing="3">
-            CIPHER
-          </text>
-          <text x="78" y="20" fontFamily="'Cormorant Garamond', Georgia, serif" fontSize="20" fontWeight="300" fill="currentColor" letterSpacing="2">
-            SHIELD
-          </text>
-        </svg>
+        <span className="addict-wordmark-text">
+          <span className="addict-wordmark-bold">CIPHER</span><span className="addict-wordmark-light">SHIELD</span>
+        </span>
         <span className="addict-header__logo-tag">IAM v4.2</span>
       </Link>
 
