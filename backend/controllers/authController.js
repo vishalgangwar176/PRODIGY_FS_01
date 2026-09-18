@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const { validationResult } = require('express-validator');
 const User = require('../models/User');
 const Token = require('../models/Token');
+const { sendOtpEmail } = require('../config/mailer');
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -65,30 +66,23 @@ const register = async (req, res) => {
       password: hashedPassword,
     });
 
-    // 5. Issue tokens
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken();
-    const refreshTokenHash = hashToken(refreshToken);
+    // 5. Generate and send OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6 digits
+    const hashedOtp = hashToken(otp);
 
-    await Token.create({
-      userId: user._id,
-      tokenHash: refreshTokenHash,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    });
+    user.emailOtp = {
+      code: hashedOtp,
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 mins
+    };
+    await user.save();
 
-    setRefreshCookie(res, refreshToken);
+    await sendOtpEmail(user.email, otp);
 
     return res.status(201).json({
       success: true,
-      message: 'Account created successfully.',
-      accessToken,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        createdAt: user.createdAt,
-      },
+      message: 'Account created. Please verify your email.',
+      requiresVerification: true,
+      email: user.email,
     });
   } catch (err) {
     console.error('Register error:', err);
@@ -113,6 +107,15 @@ const login = async (req, res) => {
     // Generic error — don't reveal which field is wrong
     if (!user || !user.isActive) {
       return res.status(401).json({ success: false, message: 'Invalid credentials.' });
+    }
+
+    if (!user.isEmailVerified) {
+      return res.status(403).json({
+        success: false,
+        message: 'Please verify your email before logging in.',
+        requiresVerification: true,
+        email: user.email,
+      });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);

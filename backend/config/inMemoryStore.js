@@ -46,6 +46,8 @@ class InMemoryStore {
       _id: this._generateId(),
       role: 'user',
       isActive: true,
+      isEmailVerified: false,
+      emailOtp: { code: null, expiresAt: null },
       createdAt: new Date(),
       updatedAt: new Date(),
       ...data,
@@ -62,6 +64,11 @@ class InMemoryStore {
       select: (fields) => {
         if (res && typeof fields === 'string') {
           if (fields.includes('-password')) delete res.password;
+          if (fields.includes('+emailOtp.code') || fields.includes('+emailOtp.expiresAt')) {
+            // Include them (already there in memory store since we don't strict-select by default, but we should make sure we don't accidentally drop them)
+          } else {
+             delete res.emailOtp;
+          }
         }
         return Promise.resolve(res);
       },
@@ -86,7 +93,12 @@ class InMemoryStore {
     const res = this._clone(this.docs[idx]);
     return {
       select: (fields) => {
-        if (fields && fields.includes('-password')) delete res.password;
+        if (fields && typeof fields === 'string') {
+          if (fields.includes('-password')) delete res.password;
+          if (!fields.includes('+emailOtp.code') && !fields.includes('+emailOtp.expiresAt')) {
+             delete res.emailOtp;
+          }
+        }
         return Promise.resolve(res);
       },
       then: (resolve) => resolve(res),
@@ -112,8 +124,13 @@ class InMemoryStore {
 
     const chain = {
       select: (fields) => {
-        if (fields && fields.includes('-password')) {
-          results.forEach((r) => delete r.password);
+        if (fields && typeof fields === 'string') {
+          if (fields.includes('-password')) {
+            results.forEach((r) => delete r.password);
+          }
+          if (!fields.includes('+emailOtp.code') && !fields.includes('+emailOtp.expiresAt')) {
+             results.forEach((r) => delete r.emailOtp);
+          }
         }
         return chain;
       },

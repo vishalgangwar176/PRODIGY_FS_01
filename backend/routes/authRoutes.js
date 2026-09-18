@@ -1,6 +1,7 @@
 const express = require('express');
 const { body } = require('express-validator');
 const { register, login, refreshToken, logout } = require('../controllers/authController');
+const { sendOtp, verifyOtp } = require('../controllers/verifyController');
 const { authLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
@@ -19,9 +20,20 @@ const loginValidation = [
   body('password').notEmpty().withMessage('Password is required'),
 ];
 
+const otpValidation = [
+  body('email').trim().isEmail().withMessage('Valid email is required').normalizeEmail(),
+];
+
+const verifyOtpValidation = [
+  ...otpValidation,
+  body('otp').trim().isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits'),
+];
+
 // Routes (rate limited)
 router.post('/register', authLimiter, registerValidation, register);
 router.post('/login', authLimiter, loginValidation, login);
+router.post('/send-otp', authLimiter, otpValidation, sendOtp);
+router.post('/verify-otp', authLimiter, verifyOtpValidation, verifyOtp);
 router.post('/refresh', refreshToken);
 router.post('/logout', logout);
 

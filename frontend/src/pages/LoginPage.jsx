@@ -38,8 +38,12 @@ const LoginPage = () => {
       await login(form.email, form.password);
       navigate('/dashboard', { replace: true });
     } catch (err) {
-      const msg = err.response?.data?.message || 'Login failed. Please try again.';
-      setApiError(msg);
+      if (err.response?.data?.requiresVerification) {
+        navigate(`/verify-email?email=${encodeURIComponent(err.response.data.email)}`, { replace: true });
+      } else {
+        const msg = err.response?.data?.message || 'Login failed. Please try again.';
+        setApiError(msg);
+      }
     } finally {
       setLoading(false);
     }

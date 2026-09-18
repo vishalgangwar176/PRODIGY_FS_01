@@ -45,16 +45,30 @@ export const AuthProvider = ({ children }) => {
   // ── Login ────────────────────────────────────────────────────────────────────
   const login = useCallback(async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
-    syncToken(data.accessToken);
-    setUser(data.user);
+    if (data.accessToken) {
+      syncToken(data.accessToken);
+      setUser(data.user);
+    }
     return data;
   }, []);
 
   // ── Register ─────────────────────────────────────────────────────────────────
   const register = useCallback(async (name, email, password) => {
     const { data } = await api.post('/auth/register', { name, email, password });
-    syncToken(data.accessToken);
-    setUser(data.user);
+    if (data.accessToken) {
+      syncToken(data.accessToken);
+      setUser(data.user);
+    }
+    return data;
+  }, []);
+
+  // ── Verify Email ─────────────────────────────────────────────────────────────
+  const verifyEmail = useCallback(async (email, otp) => {
+    const { data } = await api.post('/auth/verify-otp', { email, otp });
+    if (data.accessToken) {
+      syncToken(data.accessToken);
+      setUser(data.user);
+    }
     return data;
   }, []);
 
@@ -73,7 +87,7 @@ export const AuthProvider = ({ children }) => {
   const isAdmin = user?.role === 'admin';
 
   return (
-    <AuthContext.Provider value={{ user, accessToken, loading, isAdmin, login, register, logout }}>
+    <AuthContext.Provider value={{ user, accessToken, loading, isAdmin, login, register, verifyEmail, logout }}>
       {children}
     </AuthContext.Provider>
   );

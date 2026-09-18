@@ -74,8 +74,12 @@ const RegisterPage = () => {
 
     setLoading(true);
     try {
-      await register(form.name.trim(), form.email, form.password);
-      navigate('/dashboard', { replace: true });
+      const data = await register(form.name.trim(), form.email, form.password);
+      if (data.requiresVerification) {
+        navigate(`/verify-email?email=${encodeURIComponent(data.email)}`, { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
     } catch (err) {
       const msg = err.response?.data?.message || err.response?.data?.errors?.[0]?.msg || 'Registration failed.';
       setApiError(msg);
