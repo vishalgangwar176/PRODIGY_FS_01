@@ -1403,13 +1403,14 @@ tbody td { padding: 14px 20px; font-size: 0.86rem; }
 /* ── HERO ─────────────────────────────────────────────────────────────────── */
 .addict-hero {
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 120px 40px 60px;
-  gap: 40px;
+  padding: 140px 40px 60px;
+  gap: 60px;
   position: relative;
   overflow: hidden;
+  text-align: center;
 }
 .addict-hero__bg-grid {
   position: absolute;
@@ -1421,9 +1422,14 @@ tbody td { padding: 14px 20px; font-size: 0.86rem; }
   pointer-events: none;
 }
 .addict-hero__content {
+  max-width: 860px;
+  width: 100%;
   opacity: 0;
   transform: translateY(50px);
   transition: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .addict-hero--visible .addict-hero__content,
 .addict-hero__content.addict-reveal {
@@ -1434,6 +1440,7 @@ tbody td { padding: 14px 20px; font-size: 0.86rem; }
 .addict-hero__label {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   font-size: 0.65rem;
   font-weight: 600;
@@ -1457,6 +1464,7 @@ tbody td { padding: 14px 20px; font-size: 0.86rem; }
 .addict-hero__title {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0;
   margin-bottom: 28px;
   line-height: 0.92;
@@ -1466,7 +1474,7 @@ tbody td { padding: 14px 20px; font-size: 0.86rem; }
 }
 .addict-hero__title-line--serif {
   font-family: var(--ad-serif);
-  font-size: clamp(4rem, 10vw, 9rem);
+  font-size: clamp(5rem, 14vw, 12rem);
   font-weight: 300;
   letter-spacing: -0.03em;
   color: var(--ad-text);
@@ -1474,7 +1482,7 @@ tbody td { padding: 14px 20px; font-size: 0.86rem; }
 }
 .addict-hero__title-line--thin {
   font-family: var(--ad-serif);
-  font-size: clamp(4rem, 10vw, 9rem);
+  font-size: clamp(5rem, 14vw, 12rem);
   font-weight: 600;
   letter-spacing: -0.03em;
   color: var(--ad-text);
@@ -1485,18 +1493,20 @@ tbody td { padding: 14px 20px; font-size: 0.86rem; }
   font-weight: 400;
   letter-spacing: 0.3em;
   color: var(--ad-muted);
-  margin-top: 12px;
+  margin-top: 14px;
 }
 .addict-hero__sub {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   line-height: 1.75;
   color: var(--ad-muted);
-  max-width: 440px;
+  max-width: 520px;
   margin-bottom: 40px;
+  text-align: center;
 }
 .addict-hero__actions {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 20px;
   flex-wrap: wrap;
 }
@@ -1531,8 +1541,9 @@ tbody td { padding: 14px 20px; font-size: 0.86rem; }
 .addict-hero__scroll-hint {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
-  margin-top: 56px;
+  margin-top: 48px;
   font-size: 0.6rem;
   letter-spacing: 0.25em;
   color: var(--ad-muted);
@@ -1551,10 +1562,12 @@ tbody td { padding: 14px 20px; font-size: 0.86rem; }
 }
 
 .addict-hero__canvas {
+  width: 100%;
+  max-width: 1100px;
   border: 1px solid var(--ad-line);
   border-radius: 4px;
   overflow: hidden;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.7);
 }
 
 /* ── MARQUEE ──────────────────────────────────────────────────────────────── */
@@ -1909,8 +1922,8 @@ tbody td { padding: 14px 20px; font-size: 0.86rem; }
 
 /* ── ADDICT RESPONSIVE ────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
-  .addict-hero { grid-template-columns: 1fr; padding: 100px 24px 60px; }
-  .addict-hero__canvas { order: -1; max-height: 380px; overflow: hidden; }
+  .addict-hero { padding: 110px 24px 50px; gap: 40px; }
+  .addict-hero__canvas { max-height: 400px; }
   .addict-features__grid { grid-template-columns: 1fr; }
   .addict-feature-card { border-right: none; }
   .addict-stats-grid { grid-template-columns: repeat(2, 1fr); }
