@@ -76,7 +76,10 @@ const RegisterPage = () => {
     try {
       const data = await register(form.name.trim(), form.email, form.password);
       if (data.requiresVerification) {
-        navigate(`/verify-email?email=${encodeURIComponent(data.email)}`, { replace: true });
+        navigate(`/verify-email?email=${encodeURIComponent(data.email)}`, {
+          replace: true,
+          state: { devOtp: data.devOtp },
+        });
       } else {
         navigate('/dashboard', { replace: true });
       }

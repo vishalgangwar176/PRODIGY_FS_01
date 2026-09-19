@@ -44,14 +44,42 @@ const register = async (req, res) => {
   }
 
   const { name, email, password } = req.body;
+  const normalizedEmail = email.toLowerCase().trim();
 
   try {
     // 2. Check for duplicate email
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
-      return res.status(409).json({
-        success: false,
-        message: 'An account with this email already exists.',
+      if (existingUser.isEmailVerified) {
+        return res.status(409).json({
+          success: false,
+          message: 'An account with this email already exists.',
+        });
+      }
+
+      // If user exists but is NOT verified yet, update their info and issue a fresh OTP
+      const salt = await bcrypt.genSalt(12);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      existingUser.name = name.trim();
+      existingUser.password = hashedPassword;
+
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const hashedOtp = hashToken(otp);
+
+      existingUser.emailOtp = {
+        code: hashedOtp,
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 mins
+      };
+      await existingUser.save();
+
+      await sendOtpEmail(existingUser.email, otp);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Account details updated. Please verify your email with the new code.',
+        requiresVerification: true,
+        email: existingUser.email,
+        ...(process.env.NODE_ENV !== 'production' ? { devOtp: otp } : {}),
       });
     }
 
@@ -61,8 +89,8 @@ const register = async (req, res) => {
 
     // 4. Create user
     const user = await User.create({
-      name,
-      email: email.toLowerCase(),
+      name: name.trim(),
+      email: normalizedEmail,
       password: hashedPassword,
     });
 
@@ -83,6 +111,7 @@ const register = async (req, res) => {
       message: 'Account created. Please verify your email.',
       requiresVerification: true,
       email: user.email,
+      ...(process.env.NODE_ENV !== 'production' ? { devOtp: otp } : {}),
     });
   } catch (err) {
     console.error('Register error:', err);

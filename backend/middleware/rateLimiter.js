@@ -4,9 +4,11 @@ const rateLimit = require('express-rate-limit');
  * authLimiter — applied to /api/auth/login and /api/auth/register.
  * Prevents brute-force and credential stuffing attacks.
  */
+const isDev = process.env.NODE_ENV !== 'production';
+
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // max 10 requests per window per IP
+  max: isDev ? 100 : 10, // Generous in development, strict in production
   standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: false,
   message: {

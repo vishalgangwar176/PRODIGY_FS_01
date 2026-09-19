@@ -48,22 +48,25 @@ const sendOtp = async (req, res) => {
   }
 
   const { email } = req.body;
+  const normalizedEmail = email.toLowerCase().trim();
 
   try {
-    const user = await User.findOne({ email: email.toLowerCase() });
-    
+    const user = await User.findOne({ email: normalizedEmail });
+
     if (!user) {
-      // Don't leak if user exists
-      return res.status(200).json({ success: true, message: 'If an account exists, an OTP was sent.' });
+      return res.status(404).json({
+        success: false,
+        message: 'No account found with this email address. Please register first.',
+      });
     }
 
     if (user.isEmailVerified) {
-      return res.status(400).json({ success: false, message: 'Email is already verified.' });
+      return res.status(400).json({ success: false, message: 'Email is already verified. Please log in.' });
     }
 
     // Generate new OTP
     const otp = generateOtp();
-    
+
     // Hash for storage
     const hashedOtp = hashToken(otp);
 
@@ -77,7 +80,11 @@ const sendOtp = async (req, res) => {
     // Send email
     await sendOtpEmail(user.email, otp);
 
-    return res.status(200).json({ success: true, message: 'OTP sent successfully.' });
+    return res.status(200).json({
+      success: true,
+      message: 'A new verification code has been sent.',
+      ...(process.env.NODE_ENV !== 'production' ? { devOtp: otp } : {}),
+    });
   } catch (error) {
     console.error('Send OTP error:', error);
     return res.status(500).json({ success: false, message: 'Failed to send OTP.' });
@@ -93,9 +100,10 @@ const verifyOtp = async (req, res) => {
   }
 
   const { email, otp } = req.body;
+  const normalizedEmail = email.toLowerCase().trim();
 
   try {
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+emailOtp.code +emailOtp.expiresAt');
+    const user = await User.findOne({ email: normalizedEmail }).select('+emailOtp.code +emailOtp.expiresAt');
 
     if (!user) {
       return res.status(400).json({ success: false, message: 'Invalid OTP or email.' });
@@ -106,23 +114,23 @@ const verifyOtp = async (req, res) => {
     }
 
     if (!user.emailOtp || !user.emailOtp.code || !user.emailOtp.expiresAt) {
-      return res.status(400).json({ success: false, message: 'No OTP found for this user.' });
+      return res.status(400).json({ success: false, message: 'No active OTP found. Please request a new code.' });
     }
 
-    if (new Date() > user.emailOtp.expiresAt) {
+    if (new Date() > new Date(user.emailOtp.expiresAt)) {
       return res.status(400).json({ success: false, message: 'OTP has expired. Please request a new one.' });
     }
 
-    const isMatch = hashToken(otp) === user.emailOtp.code;
+    const isMatch = hashToken(otp.trim()) === user.emailOtp.code;
 
     if (!isMatch) {
-      return res.status(400).json({ success: false, message: 'Invalid OTP.' });
+      return res.status(400).json({ success: false, message: 'Invalid OTP. Please check the 6-digit code.' });
     }
 
     // OTP is valid! Mark as verified
     user.isEmailVerified = true;
     user.emailOtp = undefined;
-    
+
     // Update last login
     user.lastLogin = new Date();
     await user.save();

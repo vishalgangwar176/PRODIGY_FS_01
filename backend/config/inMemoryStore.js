@@ -21,7 +21,20 @@ class InMemoryStore {
     cloned.save = async () => {
       const idx = this.docs.findIndex((d) => String(d._id) === String(cloned._id));
       if (idx !== -1) {
-        this.docs[idx] = { ...this.docs[idx], ...JSON.parse(JSON.stringify(cloned)), updatedAt: new Date() };
+        const updated = { ...this.docs[idx] };
+        for (const [k, v] of Object.entries(cloned)) {
+          if (typeof v === 'function') continue;
+          if (v === undefined) {
+            delete updated[k];
+          } else {
+            updated[k] = JSON.parse(JSON.stringify(v));
+          }
+        }
+        if (cloned.emailOtp === undefined) {
+          delete updated.emailOtp;
+        }
+        updated.updatedAt = new Date();
+        this.docs[idx] = updated;
       }
       return cloned;
     };
