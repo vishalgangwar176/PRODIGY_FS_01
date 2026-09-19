@@ -35,15 +35,31 @@ const LoginPage = () => {
 
     setLoading(true);
     try {
-      await login(form.email, form.password);
+      await login(form.email.trim(), form.password);
       navigate('/dashboard', { replace: true });
     } catch (err) {
       if (err.response?.data?.requiresVerification) {
-        navigate(`/verify-email?email=${encodeURIComponent(err.response.data.email)}`, { replace: true });
+        navigate(`/verify-email?email=${encodeURIComponent(err.response.data.email)}`, {
+          replace: true,
+          state: { devOtp: err.response.data.devOtp },
+        });
       } else {
-        const msg = err.response?.data?.message || 'Login failed. Please try again.';
+        const msg = err.response?.data?.message || 'Login failed. Please check your credentials or register.';
         setApiError(msg);
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleQuickDemo = async () => {
+    setLoading(true);
+    setApiError('');
+    try {
+      await login('demo@ciphershield.io', 'Password123!');
+      navigate('/dashboard', { replace: true });
+    } catch (err) {
+      setApiError(err.response?.data?.message || 'Demo login failed.');
     } finally {
       setLoading(false);
     }
@@ -117,8 +133,34 @@ const LoginPage = () => {
 
           <div className="divider">or</div>
 
-          <div style={{ display: 'flex', gap: '8px', flexDirection: 'column' }}>
-            <div className="alert alert-info" style={{ fontSize: '0.78rem' }}>
+          <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
+            <button
+              type="button"
+              onClick={handleQuickDemo}
+              disabled={loading}
+              style={{
+                width: '100%',
+                padding: '11px',
+                borderRadius: '8px',
+                border: '1px solid rgba(56, 189, 248, 0.4)',
+                background: 'rgba(56, 189, 248, 0.08)',
+                color: '#38bdf8',
+                fontSize: '0.88rem',
+                fontWeight: '600',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(56, 189, 248, 0.16)')}
+              onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(56, 189, 248, 0.08)')}
+            >
+              <span>⚡</span> One-Click Demo Sign In
+            </button>
+
+            <div className="alert alert-info" style={{ fontSize: '0.78rem', marginTop: '4px' }}>
               🔐 Zero-Trust verification active. All sessions are monitored.
             </div>
           </div>

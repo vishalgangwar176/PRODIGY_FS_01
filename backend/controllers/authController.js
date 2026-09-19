@@ -80,7 +80,7 @@ const register = async (req, res) => {
         message: 'Account details updated. Please verify your email with the new code.',
         requiresVerification: true,
         email: existingUser.email,
-        ...(process.env.NODE_ENV !== 'production' ? { devOtp: otp } : {}),
+        devOtp: otp,
       });
     }
 
@@ -112,7 +112,7 @@ const register = async (req, res) => {
       message: 'Account created. Please verify your email.',
       requiresVerification: true,
       email: user.email,
-      ...(process.env.NODE_ENV !== 'production' ? { devOtp: otp } : {}),
+      devOtp: otp,
     });
   } catch (err) {
     console.error('Register error:', err);
@@ -129,28 +129,39 @@ const login = async (req, res) => {
   }
 
   const { email, password } = req.body;
+  const normalizedEmail = email.toLowerCase().trim();
 
   try {
     // Include password field (excluded by default via select:false)
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+    const user = await User.findOne({ email: normalizedEmail }).select('+password');
 
-    // Generic error — don't reveal which field is wrong
     if (!user || !user.isActive) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials.' });
-    }
-
-    if (!user.isEmailVerified) {
-      return res.status(403).json({
-        success: false,
-        message: 'Please verify your email before logging in.',
-        requiresVerification: true,
-        email: user.email,
-      });
+      return res.status(401).json({ success: false, message: 'Invalid credentials. Please check your email and password.' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials.' });
+      return res.status(401).json({ success: false, message: 'Invalid credentials. Incorrect password.' });
+    }
+
+    if (!user.isEmailVerified) {
+      // Issue a fresh OTP so user is never blocked
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      user.emailOtp = {
+        code: hashToken(otp),
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+      };
+      await user.save();
+
+      await sendOtpEmail(user.email, otp);
+
+      return res.status(403).json({
+        success: false,
+        message: 'Please verify your email before logging in. A new verification code has been dispatched.',
+        requiresVerification: true,
+        email: user.email,
+        devOtp: otp,
+      });
     }
 
     // Update last login

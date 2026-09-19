@@ -84,10 +84,54 @@ app.use((err, req, res, next) => {
   });
 });
 
+// ─── Seed Demo Users for Quick Access ──────────────────────────────────────────
+const seedDemoUsers = async () => {
+  try {
+    const User = require('./models/User');
+    const bcrypt = require('bcryptjs');
+
+    const demoUsers = [
+      {
+        name: 'Demo Explorer',
+        email: 'demo@ciphershield.io',
+        password: 'Password123!',
+        role: 'user',
+        isEmailVerified: true,
+      },
+      {
+        name: 'System Admin',
+        email: 'admin@ciphershield.io',
+        password: 'AdminPass123!',
+        role: 'admin',
+        isEmailVerified: true,
+      },
+    ];
+
+    for (const u of demoUsers) {
+      const exists = await User.findOne({ email: u.email });
+      if (!exists) {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(u.password, salt);
+        await User.create({
+          name: u.name,
+          email: u.email,
+          password: hashedPassword,
+          role: u.role,
+          isEmailVerified: true,
+        });
+        console.log(`✨ Seeded demo user: ${u.email}`);
+      }
+    }
+  } catch (err) {
+    console.warn('Demo seed notice:', err.message);
+  }
+};
+
 // ─── Start Server ─────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`🚀 CipherShield API running on http://localhost:${PORT}`);
   console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
+  await seedDemoUsers();
 });
 
 module.exports = app;

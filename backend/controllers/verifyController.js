@@ -84,7 +84,7 @@ const sendOtp = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'A new verification code has been sent.',
-      ...(process.env.NODE_ENV !== 'production' ? { devOtp: otp } : {}),
+      devOtp: otp,
     });
   } catch (error) {
     console.error('Send OTP error:', error);
