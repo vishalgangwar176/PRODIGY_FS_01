@@ -36,6 +36,7 @@ app.use(
       if (
         allowedOrigins.includes(origin) ||
         origin.endsWith('.github.io') ||
+        origin.endsWith('.vercel.app') ||
         origin.includes('localhost') ||
         origin.includes('127.0.0.1')
       ) {
