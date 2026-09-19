@@ -24,7 +24,7 @@ app.use(
   })
 );
 
-const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173,https://vishalgangwar176.github.io')
   .split(',')
   .map((o) => o.trim());
 
@@ -33,7 +33,14 @@ app.use(
     origin: (origin, callback) => {
       // Allow requests with no origin (e.g. curl, Postman, server-to-server)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.endsWith('.github.io') ||
+        origin.includes('localhost') ||
+        origin.includes('127.0.0.1')
+      ) {
+        return callback(null, true);
+      }
       callback(new Error(`CORS: origin ${origin} not allowed`));
     },
     credentials: true, // allow cookies

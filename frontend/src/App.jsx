@@ -11,7 +11,7 @@ import GlobalCursor from './components/GlobalCursor';
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <GlobalCursor />
       <AuthProvider>
         <Routes>
